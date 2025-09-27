@@ -459,7 +459,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               '8. 連絡先\n\n'
                               '本アプリに関するお問い合わせは、以下の連絡先までお願いします。\n\n'
                               'ニューズジャパン株式会社\n'
-                              'メール: info@newsjapan.co.jp\n\n'
+                              'メール: newsjapan2015@gmail.com\n\n'
                               '制定日: 2025年9月27日',
                             ),
                           ),
@@ -506,7 +506,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               '7. お問い合わせ\n\n'
                               '本ポリシーに関するお問い合わせは、以下の連絡先までお願いします。\n\n'
                               'ニューズジャパン株式会社\n'
-                              'メール: info@newsjapan.co.jp\n\n'
+                              'メール: newsjapan2015@gmail.com\n\n'
                               '制定日: 2025年9月27日',
                             ),
                           ),
@@ -792,7 +792,7 @@ class _StartupScreenState extends State<StartupScreen> {
                                       '8. 連絡先\n\n'
                                       '本アプリに関するお問い合わせは、以下の連絡先までお願いします。\n\n'
                                       'ニューズジャパン株式会社\n'
-                                      'メール: info@newsjapan.co.jp\n\n'
+                                      'メール: newsjapan2015@gmail.com\n\n'
                                       '制定日: 2025年9月27日',
                                     ),
                                   ),
@@ -833,7 +833,7 @@ class _StartupScreenState extends State<StartupScreen> {
                                       '7. お問い合わせ\n\n'
                                       '本ポリシーに関するお問い合わせは、以下の連絡先までお願いします。\n\n'
                                       'ニューズジャパン株式会社\n'
-                                      'メール: info@newsjapan.co.jp\n\n'
+                                      'メール: newsjapan2015@gmail.com\n\n'
                                       '制定日: 2025年9月27日',
                                     ),
                                   ),
