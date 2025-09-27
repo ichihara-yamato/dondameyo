@@ -64,6 +64,10 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/dondame_kids.png
+    - assets/icon.png
+    - assets/bg.png
+    - assets/button_bg1.png
+    - assets/button_bg2.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
