@@ -296,89 +296,232 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('設定')),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: [
-          const Text(
-            '衝撃検知設定',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      appBar: AppBar(
+        title: const Text(
+          '設定',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.pinkAccent,
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/bg.png'),
+            fit: BoxFit.cover,
           ),
-          const SizedBox(height: 16),
-          Text('閾値: ${threshold.toStringAsFixed(1)} m/s²'),
-          Slider(
-            value: threshold,
-            min: 10,
-            max: 100,
-            divisions: 90,
-            label: threshold.toStringAsFixed(1),
-            onChanged: (value) async {
-              setState(() {
-                threshold = value;
-              });
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.setDouble('threshold', value);
-              widget.onThresholdChanged(value);
-            },
-          ),
-          const Divider(height: 32),
-          const Text(
-            'このアプリについて',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
-          if (packageInfo != null) ...[
-            ListTile(
-              title: const Text('バージョン'),
-              subtitle: Text(packageInfo!.version),
+        ),
+        child: ListView(
+          padding: const EdgeInsets.all(16.0),
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    '衝撃検知設定',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    '閾値: ${threshold.toStringAsFixed(1)} m/s²',
+                    style: const TextStyle(color: Colors.black),
+                  ),
+                  Slider(
+                    value: threshold,
+                    min: 10,
+                    max: 100,
+                    divisions: 90,
+                    label: threshold.toStringAsFixed(1),
+                    onChanged: (value) async {
+                      setState(() {
+                        threshold = value;
+                      });
+                      final prefs = await SharedPreferences.getInstance();
+                      await prefs.setDouble('threshold', value);
+                      widget.onThresholdChanged(value);
+                    },
+                  ),
+                  Text(
+                    threshold < 30
+                        ? '低い: 軽い衝撃でも検知 (例: 机に軽く置く)'
+                        : threshold < 60
+                            ? '中程度: 普通の衝撃で検知 (例: 机に普通に叩く)'
+                            : '高い: 強い衝撃のみ検知 (例: 机に強く叩く)',
+                    style: const TextStyle(fontSize: 14, color: Colors.black),
+                  ),
+                ],
+              ),
             ),
-            ListTile(
-              title: const Text('ビルド'),
-              subtitle: Text(packageInfo!.buildNumber),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'このアプリについて',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  if (packageInfo != null) ...[
+                    ListTile(
+                      title: const Text(
+                        'バージョン',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      subtitle: Text(
+                        packageInfo!.version,
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    ListTile(
+                      title: const Text(
+                        'ビルド',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      subtitle: Text(
+                        packageInfo!.buildNumber,
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Column(
+                children: [
+                  ListTile(
+                    title: const Text(
+                      '利用規約',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    trailing: const Icon(
+                      Icons.arrow_forward,
+                      color: Colors.black,
+                    ),
+                    onTap: () {
+                      // 利用規約を表示
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('利用規約'),
+                          content: const SingleChildScrollView(
+                            child: Text(
+                              'この利用規約（以下、「本規約」といいます。）は、ニューズジャパン株式会社（以下、「当社」といいます。）が提供する「ドンだめよ」アプリケーション（以下、「本アプリ」といいます。）の利用条件を定めるものです。ユーザーの皆さま（以下、「ユーザー」といいます。）には、本規約に従って、本アプリをご利用いただきます。\n\n'
+                              '1. 適用\n\n'
+                              '本規約は、ユーザーと当社との間の本アプリの利用に関わる一切の関係に適用されるものとします。\n\n'
+                              '2. 利用資格\n\n'
+                              'ユーザーは、本アプリを利用するにあたり、以下の条件を満たすものとします。\n'
+                              '- 未成年者の場合、保護者の同意を得ていること。\n'
+                              '- 本規約に同意すること。\n\n'
+                              '3. サービスの概要\n\n'
+                              '本アプリは、スマートフォンの加速度センサーを利用して衝撃を検知し、警告音を再生することで、落とし物防止を支援するアプリケーションです。本アプリは、子供向けに設計されており、安全な利用を目的としています。\n\n'
+                              '4. 禁止事項\n\n'
+                              'ユーザーは、本アプリの利用にあたり、以下の行為をしてはなりません。\n'
+                              '- 本アプリの不正利用や改変。\n'
+                              '- 当社または第三者の権利を侵害する行為。\n'
+                              '- 法令に違反する行為。\n'
+                              '- 本アプリの正常な動作を妨げる行為。\n\n'
+                              '5. 免責事項\n\n'
+                              '当社は、本アプリの利用により生じた損害（データの損失、機器の故障など）について、一切の責任を負いません。ユーザーは自己責任で本アプリを利用するものとします。また、本アプリは完全性を保証するものではなく、検知が失敗する場合があります。\n\n'
+                              '6. 知的財産権\n\n'
+                              '本アプリに関する著作権、商標権、その他の知的財産権は、当社または正当な権利者に帰属します。ユーザーは、これらを侵害しないよう注意するものとします。\n\n'
+                              '7. 変更\n\n'
+                              '当社は、必要に応じて本規約を変更することができるものとします。変更後の規約は、本アプリ上に掲載された時点で効力を生じるものとします。ユーザーは定期的に本規約を確認するものとします。\n\n'
+                              '8. 連絡先\n\n'
+                              '本アプリに関するお問い合わせは、以下の連絡先までお願いします。\n\n'
+                              'ニューズジャパン株式会社\n'
+                              'メール: info@newsjapan.co.jp\n\n'
+                              '制定日: 2025年9月27日',
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('閉じる'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    title: const Text(
+                      'プライバシー・ポリシー',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    trailing: const Icon(
+                      Icons.arrow_forward,
+                      color: Colors.black,
+                    ),
+                    onTap: () {
+                      // プライバシー・ポリシーを表示
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('プライバシー・ポリシー'),
+                          content: const SingleChildScrollView(
+                            child: Text(
+                              'ニューズジャパン株式会社（以下、「当社」といいます。）は、「ドンだめよ」アプリケーション（以下、「本アプリ」といいます。）におけるユーザーの個人情報の取扱いについて、以下のとおりプライバシーポリシー（以下、「本ポリシー」といいます。）を定めます。\n\n'
+                              '1. 収集する情報\n\n'
+                              '本アプリは、ユーザーの個人情報（氏名、メールアドレス、電話番号など）を収集しません。本アプリはオフラインで動作し、インターネット接続を必要としません。ただし、アプリの設定情報（例: 衝撃検知の閾値）をユーザーのデバイス内のローカルストレージ（SharedPreferences）に保存する場合があります。これらの情報はデバイス内にのみ保存され、当社または第三者のサーバーに送信されることはありません。\n\n'
+                              '2. センサー情報の利用\n\n'
+                              '本アプリは、スマートフォンの加速度センサーを利用して衝撃を検知し、警告音を再生します。このセンサー情報はデバイス上でリアルタイムに処理され、外部に送信されることはありません。また、この情報は一時的にメモリに保持されるだけで、永続的に保存されることはありません。\n\n'
+                              '3. 第三者提供\n\n'
+                              '当社は、ユーザーの個人情報を第三者に提供、販売、または共有することはありません。\n\n'
+                              '4. 安全管理\n\n'
+                              '当社は、本アプリの開発において、ユーザーの情報を保護するための適切なセキュリティ対策を講じています。ただし、本アプリが保存する情報はユーザーのデバイス内にのみ存在するため、デバイスのセキュリティ（パスワード設定、OSの更新など）はユーザー自身の責任となります。当社は、デバイスの紛失や盗難による情報漏洩について責任を負いかねます。\n\n'
+                              '5. 未成年者の利用\n\n'
+                              '本アプリは子供向けに設計されています。未成年者が本アプリを利用する場合、保護者の同意を得ることを推奨します。当社は、未成年者の個人情報を意図的に収集することはありません。\n\n'
+                              '6. ポリシーの変更\n\n'
+                              '当社は、必要に応じて本ポリシーを変更することができるものとします。変更後のポリシーは、本アプリ上に掲載された時点で効力を生じるものとします。\n\n'
+                              '7. お問い合わせ\n\n'
+                              '本ポリシーに関するお問い合わせは、以下の連絡先までお願いします。\n\n'
+                              'ニューズジャパン株式会社\n'
+                              'メール: info@newsjapan.co.jp\n\n'
+                              '制定日: 2025年9月27日',
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('閉じる'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ],
-          const Divider(height: 32),
-          ListTile(
-            title: const Text('利用規約'),
-            trailing: const Icon(Icons.arrow_forward),
-            onTap: () {
-              // 利用規約を表示
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('利用規約'),
-                  content: const Text('ここに利用規約の内容を記載します。'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('閉じる'),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-          ListTile(
-            title: const Text('プライバシー・ポリシー'),
-            trailing: const Icon(Icons.arrow_forward),
-            onTap: () {
-              // プライバシー・ポリシーを表示
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('プライバシー・ポリシー'),
-                  content: const Text('ここにプライバシー・ポリシーの内容を記載します。'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('閉じる'),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
+        ),
       ),
     );
   }
