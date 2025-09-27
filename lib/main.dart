@@ -41,6 +41,12 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     audioPlayer = AudioPlayer();
+    audioPlayer!.setAudioContext(AudioContext(
+      iOS: AudioContextIOS(
+        category: AVAudioSessionCategory.playback,
+        options: {AVAudioSessionOptions.mixWithOthers},
+      ),
+    ));
     accelerometerSubscription = accelerometerEvents.listen((event) {
       if (!isMonitoring) return;
 
@@ -49,9 +55,10 @@ class _HomePageState extends State<HomePage> {
 
       debugPrint('Acceleration: $acceleration');
 
-      if (acceleration > 10.0) {
-        debugPrint('Fall detected! Playing sound.');
-        audioPlayer?.play(AssetSource('assets/warning.mp3'));
+      if (acceleration > 40.0) {
+        debugPrint('Fall detected! Acceleration: $acceleration');
+        audioPlayer?.play(AssetSource('warning.mp3'));
+        debugPrint('Sound played');
         _showStopDialog();
       }
     });
