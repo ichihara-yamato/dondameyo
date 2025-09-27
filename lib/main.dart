@@ -321,6 +321,14 @@ class _SettingsPageState extends State<SettingsPage> {
               widget.onThresholdChanged(value);
             },
           ),
+          Text(
+            threshold < 30
+                ? '低い: 軽い衝撃でも検知 (例: 机に軽く置く)'
+                : threshold < 60
+                    ? '中程度: 普通の衝撃で検知 (例: 机に普通に叩く)'
+                    : '高い: 強い衝撃のみ検知 (例: 机に強く叩く)',
+            style: const TextStyle(fontSize: 14, color: Colors.grey),
+          ),
           const Divider(height: 32),
           const Text(
             'このアプリについて',
