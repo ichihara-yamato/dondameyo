@@ -1,17 +1,17 @@
-# ドンドンッダメよ (dondondameyo)
+# ドンだめよ (dondondameyo)
 
 このリポジトリは Flutter ベースのモバイルアプリケーションのプロジェクトです。
 
 ## 概要
 
-- 表示名: ドンドンッダメよ
+- 表示名: ドンだめよ
 - パッケージ名 / bundle identifier: com.example.dondondameyo（変更していません）
 
 本リポジトリは Flutter の標準テンプレートを元に作成されています。
 
 ## 最近の変更
 
-- アプリ表示名を `ドンドンッダメよ` に変更しました。
+- アプリ表示名を `ドンだめよ` に変更しました。
   - Android: `android/app/src/main/AndroidManifest.xml` の `android:label` を更新
   - iOS: `ios/Runner/Info.plist` の `CFBundleDisplayName` / `CFBundleName` を更新
 - ルートに配置した `icon.png` を使い、ImageMagick によりアプリ用アイコンを生成して配置しました。
@@ -28,6 +28,7 @@
 ## ビルド / 実行方法
 
 ### 共通
+
 1. Flutter のセットアップを行う（SDK インストール、Xcode/Android SDK 設定など）
 2. 依存取得
 
