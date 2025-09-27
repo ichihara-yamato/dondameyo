@@ -296,97 +296,182 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('設定')),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: [
-          const Text(
-            '衝撃検知設定',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      appBar: AppBar(
+        title: const Text(
+          '設定',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.pinkAccent,
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/bg.png'),
+            fit: BoxFit.cover,
           ),
-          const SizedBox(height: 16),
-          Text('閾値: ${threshold.toStringAsFixed(1)} m/s²'),
-          Slider(
-            value: threshold,
-            min: 10,
-            max: 100,
-            divisions: 90,
-            label: threshold.toStringAsFixed(1),
-            onChanged: (value) async {
-              setState(() {
-                threshold = value;
-              });
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.setDouble('threshold', value);
-              widget.onThresholdChanged(value);
-            },
-          ),
-          Text(
-            threshold < 30
-                ? '低い: 軽い衝撃でも検知 (例: 机に軽く置く)'
-                : threshold < 60
-                    ? '中程度: 普通の衝撃で検知 (例: 机に普通に叩く)'
-                    : '高い: 強い衝撃のみ検知 (例: 机に強く叩く)',
-            style: const TextStyle(fontSize: 14, color: Colors.grey),
-          ),
-          const Divider(height: 32),
-          const Text(
-            'このアプリについて',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
-          if (packageInfo != null) ...[
-            ListTile(
-              title: const Text('バージョン'),
-              subtitle: Text(packageInfo!.version),
+        ),
+        child: ListView(
+          padding: const EdgeInsets.all(16.0),
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    '衝撃検知設定',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    '閾値: ${threshold.toStringAsFixed(1)} m/s²',
+                    style: const TextStyle(color: Colors.black),
+                  ),
+                  Slider(
+                    value: threshold,
+                    min: 10,
+                    max: 100,
+                    divisions: 90,
+                    label: threshold.toStringAsFixed(1),
+                    onChanged: (value) async {
+                      setState(() {
+                        threshold = value;
+                      });
+                      final prefs = await SharedPreferences.getInstance();
+                      await prefs.setDouble('threshold', value);
+                      widget.onThresholdChanged(value);
+                    },
+                  ),
+                  Text(
+                    threshold < 30
+                        ? '低い: 軽い衝撃でも検知 (例: 机に軽く置く)'
+                        : threshold < 60
+                            ? '中程度: 普通の衝撃で検知 (例: 机に普通に叩く)'
+                            : '高い: 強い衝撃のみ検知 (例: 机に強く叩く)',
+                    style: const TextStyle(fontSize: 14, color: Colors.black),
+                  ),
+                ],
+              ),
             ),
-            ListTile(
-              title: const Text('ビルド'),
-              subtitle: Text(packageInfo!.buildNumber),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'このアプリについて',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  if (packageInfo != null) ...[
+                    ListTile(
+                      title: const Text(
+                        'バージョン',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      subtitle: Text(
+                        packageInfo!.version,
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    ListTile(
+                      title: const Text(
+                        'ビルド',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      subtitle: Text(
+                        packageInfo!.buildNumber,
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Column(
+                children: [
+                  ListTile(
+                    title: const Text(
+                      '利用規約',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    trailing: const Icon(
+                      Icons.arrow_forward,
+                      color: Colors.black,
+                    ),
+                    onTap: () {
+                      // 利用規約を表示
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('利用規約'),
+                          content: const Text('ここに利用規約の内容を記載します。'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('閉じる'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    title: const Text(
+                      'プライバシー・ポリシー',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    trailing: const Icon(
+                      Icons.arrow_forward,
+                      color: Colors.black,
+                    ),
+                    onTap: () {
+                      // プライバシー・ポリシーを表示
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('プライバシー・ポリシー'),
+                          content: const Text('ここにプライバシー・ポリシーの内容を記載します。'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('閉じる'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ],
-          const Divider(height: 32),
-          ListTile(
-            title: const Text('利用規約'),
-            trailing: const Icon(Icons.arrow_forward),
-            onTap: () {
-              // 利用規約を表示
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('利用規約'),
-                  content: const Text('ここに利用規約の内容を記載します。'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('閉じる'),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-          ListTile(
-            title: const Text('プライバシー・ポリシー'),
-            trailing: const Icon(Icons.arrow_forward),
-            onTap: () {
-              // プライバシー・ポリシーを表示
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('プライバシー・ポリシー'),
-                  content: const Text('ここにプライバシー・ポリシーの内容を記載します。'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('閉じる'),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
+        ),
       ),
     );
   }
