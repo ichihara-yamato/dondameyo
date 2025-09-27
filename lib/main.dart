@@ -1,9 +1,11 @@
-import 'dart:async';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'dart:math';
+import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,10 +38,12 @@ class _HomePageState extends State<HomePage> {
   bool isMonitoring = false;
   AudioPlayer? audioPlayer;
   StreamSubscription<AccelerometerEvent>? accelerometerSubscription;
+  double threshold = 40.0;
 
   @override
   void initState() {
     super.initState();
+    _loadThreshold();
     audioPlayer = AudioPlayer();
     audioPlayer!.setAudioContext(AudioContext(
       iOS: AudioContextIOS(
@@ -55,12 +59,25 @@ class _HomePageState extends State<HomePage> {
 
       debugPrint('Acceleration: $acceleration');
 
-      if (acceleration > 40.0) {
+      if (acceleration > threshold) {
         debugPrint('Fall detected! Acceleration: $acceleration');
         audioPlayer?.play(AssetSource('warning.mp3'));
         debugPrint('Sound played');
         _showStopDialog();
       }
+    });
+  }
+
+  Future<void> _loadThreshold() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      threshold = prefs.getDouble('threshold') ?? 40.0;
+    });
+  }
+
+  void _updateThreshold(double newThreshold) {
+    setState(() {
+      threshold = newThreshold;
     });
   }
 
@@ -147,7 +164,7 @@ class _HomePageState extends State<HomePage> {
                         backgroundImage: 'assets/button_bg2.png',
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) => const SettingsPage(),
+                            builder: (_) => SettingsPage(onThresholdChanged: _updateThreshold),
                           ),
                         ),
                       ),
@@ -244,14 +261,125 @@ class _SquarePanel extends StatelessWidget {
   }
 }
 
-class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
+class SettingsPage extends StatefulWidget {
+  final Function(double) onThresholdChanged;
+
+  const SettingsPage({super.key, required this.onThresholdChanged});
+
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  double threshold = 40.0;
+  PackageInfo? packageInfo;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadThreshold();
+    _loadPackageInfo();
+  }
+
+  Future<void> _loadThreshold() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      threshold = prefs.getDouble('threshold') ?? 40.0;
+    });
+  }
+
+  Future<void> _loadPackageInfo() async {
+    packageInfo = await PackageInfo.fromPlatform();
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('設定')),
-      body: const Center(child: Text('設定画面')),
+      body: ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: [
+          const Text(
+            '衝撃検知設定',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          Text('閾値: ${threshold.toStringAsFixed(1)} m/s²'),
+          Slider(
+            value: threshold,
+            min: 10,
+            max: 100,
+            divisions: 90,
+            label: threshold.toStringAsFixed(1),
+            onChanged: (value) async {
+              setState(() {
+                threshold = value;
+              });
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.setDouble('threshold', value);
+              widget.onThresholdChanged(value);
+            },
+          ),
+          const Divider(height: 32),
+          const Text(
+            'このアプリについて',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          if (packageInfo != null) ...[
+            ListTile(
+              title: const Text('バージョン'),
+              subtitle: Text(packageInfo!.version),
+            ),
+            ListTile(
+              title: const Text('ビルド'),
+              subtitle: Text(packageInfo!.buildNumber),
+            ),
+          ],
+          const Divider(height: 32),
+          ListTile(
+            title: const Text('利用規約'),
+            trailing: const Icon(Icons.arrow_forward),
+            onTap: () {
+              // 利用規約を表示
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('利用規約'),
+                  content: const Text('ここに利用規約の内容を記載します。'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('閉じる'),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+          ListTile(
+            title: const Text('プライバシー・ポリシー'),
+            trailing: const Icon(Icons.arrow_forward),
+            onTap: () {
+              // プライバシー・ポリシーを表示
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('プライバシー・ポリシー'),
+                  content: const Text('ここにプライバシー・ポリシーの内容を記載します。'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('閉じる'),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }
