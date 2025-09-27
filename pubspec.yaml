@@ -47,6 +47,7 @@ dependencies:
   audioplayers: ^6.0.0
   shared_preferences: ^2.5.3
   package_info_plus: ^9.0.0
+  permission_handler: ^11.3.1
 
 dev_dependencies:
   flutter_test:
@@ -78,6 +79,7 @@ flutter:
     - assets/bg.png
     - assets/button_bg1.png
     - assets/button_bg2.png
+    - assets/dondame_kids.png
     - assets/warning.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see
