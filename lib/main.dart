@@ -67,34 +67,46 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ホーム画面'),
+        title: const Text('ドンだめよ', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: Colors.pinkAccent,
+        elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: 8),
-            // Two square panels placed vertically with spacing
-            Expanded(
-              child: Row(
-                children: [
-                  Expanded(child: _SquarePanel(
-                    label: '起動',
-                    icon: Icons.play_arrow,
-                    onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const StartPage())),
-                  )),
-                  const SizedBox(width: 16),
-                  Expanded(child: _SquarePanel(
-                    label: '設定',
-                    icon: Icons.settings,
-                    onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SettingsPage())),
-                  )),
-                ],
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/bg.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 8),
+              // Two square panels placed vertically with spacing
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(child: _SquarePanel(
+                      label: '起動',
+                      icon: Icons.play_arrow,
+                      backgroundImage: 'assets/button_bg1.png',
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const StartPage())),
+                    )),
+                    const SizedBox(width: 16),
+                    Expanded(child: _SquarePanel(
+                      label: '設定',
+                      icon: Icons.settings,
+                      backgroundImage: 'assets/button_bg2.png',
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SettingsPage())),
+                    )),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-          ],
+              const SizedBox(height: 24),
+            ],
+          ),
         ),
       ),
     );
@@ -103,10 +115,21 @@ class HomePage extends StatelessWidget {
 
 class _SquarePanel extends StatelessWidget {
   final String label;
-  final IconData icon;
+  final IconData? icon;
+  final String? iconPath;
   final VoidCallback onTap;
+  final Color? color;
+  final String? backgroundImage;
 
-  const _SquarePanel({required this.label, required this.icon, required this.onTap});
+  const _SquarePanel({
+    required this.label,
+    this.icon,
+    this.iconPath,
+    required this.onTap,
+    this.color,
+    this.backgroundImage,
+  }) : assert(icon != null || iconPath != null, 'Either icon or iconPath must be provided'),
+       assert(color != null || backgroundImage != null, 'Either color or backgroundImage must be provided');
 
   @override
   Widget build(BuildContext context) {
@@ -117,17 +140,24 @@ class _SquarePanel extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: color,
+            image: backgroundImage != null ? DecorationImage(
+              image: AssetImage(backgroundImage!),
+              fit: BoxFit.cover,
+            ) : null,
             borderRadius: BorderRadius.circular(12),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 8, offset: const Offset(0,4))],
+            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 8, offset: const Offset(0,4))],
           ),
           child: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(icon, size: 48, color: Theme.of(context).colorScheme.primary),
+                if (iconPath != null)
+                  Image.asset(iconPath!, width: 48, height: 48, fit: BoxFit.contain)
+                else
+                  Icon(icon, size: 48, color: Colors.white),
                 const SizedBox(height: 12),
-                Text(label, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                Text(label, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white)),
               ],
             ),
           ),
