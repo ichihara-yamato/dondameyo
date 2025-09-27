@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
+import 'dart:io';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'dart:math';
@@ -417,54 +417,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 borderRadius: BorderRadius.circular(8.0),
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    '権限設定',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'このアプリはセンサーを使って衝撃を検知します。権限が許可されていない場合、再度許可をリクエストできます。',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () async {
-                      final status = await Permission.sensors.request();
-                      if (status.isGranted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('センサー権限が許可されました')),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('センサー権限が拒否されました')),
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.pinkAccent,
-                    ),
-                    child: const Text(
-                      'センサー権限をリクエスト',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.9),
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: Column(
                 children: [
                   ListTile(
                     title: const Text(
@@ -671,12 +623,36 @@ class _StartupScreenState extends State<StartupScreen> {
   }
 
   Future<void> _requestPermissions() async {
+    if (Platform.isIOS) {
+      // iOSではセンサー権限は自動的に許可されるため、スキップ
+      await widget.onFinish();
+      return;
+    }
     final status = await Permission.sensors.request();
     if (status.isGranted) {
       await widget.onFinish();
     } else {
-      // 許可されなかった場合も進める（iOSでは自動許可される）
-      await widget.onFinish();
+      // 許可されなかった場合、設定アプリを開くよう促す
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('権限が必要です'),
+          content: const Text('センサー権限が拒否されました。設定アプリから権限を許可してください。'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('キャンセル'),
+            ),
+            TextButton(
+              onPressed: () {
+                openAppSettings();
+                Navigator.of(context).pop();
+              },
+              child: const Text('設定を開く'),
+            ),
+          ],
+        ),
+      );
     }
   }
 
@@ -776,8 +752,7 @@ class _StartupScreenState extends State<StartupScreen> {
                       ),
                       const SizedBox(height: 16),
                       const Text(
-                        'このアプリはセンサーを使って衝撃を検知します。\n'
-                        '安全に利用するため、センサーの使用許可が必要です。',
+                        'このアプリを利用するには、利用規約に同意する必要があります。\n\nボタンを押すことで利用規約に同意したことになります。',
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 16),
                       ),
@@ -887,7 +862,7 @@ class _StartupScreenState extends State<StartupScreen> {
                           ),
                         ),
                         child: const Text(
-                          '利用する',
+                          '同意して利用する',
                           style: TextStyle(fontSize: 18, color: Colors.white),
                         ),
                       ),
